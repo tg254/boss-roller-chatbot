@@ -365,10 +365,12 @@ Sun: 11am – 5:30pm
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
     """)
     st.divider()
-    api_key = st.text_input("OpenAI API Key", type="password",
-                            value=os.getenv("OPENAI_API_KEY", ""),
-                            help="Get your key at platform.openai.com")
-    st.divider()
+    # api_key = st.text_input("OpenAI API Key", type="password",
+                           #  value=os.getenv("OPENAI_API_KEY", ""),
+                           #  help="Get your key at platform.openai.com")
+    
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    # st.divider()
     if st.button("🔄 Clear conversation"):
         st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         st.session_state.display_messages = []
