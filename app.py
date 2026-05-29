@@ -431,11 +431,46 @@ if uploaded_file:
         st.success(f"✅ {uploaded_file.name} ready — ask me anything about it! 📄")
 if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
     if not api_key:
-     st.error("Configuration error — please contact support.")
-    st.stop()
+        st.error("Configuration error — please contact support.")
+        st.stop()
 
-  # Rebuild system prompt with latest PDF content every message
+    # Rebuild system prompt with latest PDF content every message
     current_prompt = SYSTEM_PROMPT
+    if st.session_state.get("pdf_text"):
+        current_prompt = SYSTEM_PROMPT + f"""
+
+═══════════════════════════════
+📄 UPLOADED DOCUMENT
+═══════════════════════════════
+Document name: {st.session_state.pdf_name}
+Content: {st.session_state.pdf_text[:2000]}
+Answer questions about this document when asked."""
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    st.session_state.display_messages.append({"role": "user", "content": prompt})
+
+    # Build messages with updated system prompt
+    messages_to_send = [{"role": "system", "content": current_prompt}]
+    for msg in st.session_state.display_messages:
+        messages_to_send.append({"role": msg["role"], "content": msg["content"]})
+
+    with st.chat_message("assistant"):
+        with st.spinner("Rolly is rolling... 🍦😎"):
+            try:
+                client = OpenAI(api_key=api_key)
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=messages_to_send,
+                    temperature=0.8,
+                    max_tokens=500,
+                )
+                reply = response.choices[0].message.content
+                st.markdown(reply)
+                st.session_state.display_messages.append({"role": "assistant", "content": reply})
+            except Exception as e:
+                st.error(f"Error: {e}")
+
     if st.session_state.get("pdf_text"):
         current_prompt = SYSTEM_PROMPT + f"""
 
