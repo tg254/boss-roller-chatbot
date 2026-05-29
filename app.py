@@ -2,6 +2,9 @@ import os
 import streamlit as st
 from openai import OpenAI
 from datetime import datetime
+from openai import OpenAI
+import pypdf
+
 
 st.set_page_config(page_title="Boss Roller | Rolled Ice Cream Show", page_icon="😎", layout="centered")
 
@@ -310,10 +313,24 @@ sort you out! 🍦😎"
 NEVER make up information not listed above.
 NEVER mention prices not on the menu.
 ALWAYS be fun, bold and enthusiastic — 
-you are the ultimate hype person for Boss Roller! 😎🍦"""
+you are the ultimate hype person for Boss Roller! 😎🍦
 
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+═══════════════════════════════
+📄 UPLOADED DOCUMENT
+═══════════════════════════════
+{f"The owner has uploaded a document called '{st.session_state.get('pdf_name', '')}'. Use this information to answer questions if relevant: {st.session_state.get('pdf_text', '')[:2000]}" if st.session_state.get('pdf_text') else "No document uploaded yet."}"""
+
+def extract_pdf_text(pdf_file):
+    reader = pypdf.PdfReader(pdf_file)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
+
+if "pdf_text" not in st.session_state:
+    st.session_state.pdf_text = ""
+if "pdf_name" not in st.session_state:
+    st.session_state.pdf_name = ""
 if "display_messages" not in st.session_state:
     st.session_state.display_messages = []
 
@@ -351,7 +368,7 @@ Check our Social Media for updates
 **⏰ Opening Hours**
 Fri & Sat: 11am – 6pm
 Sun: 11am – 5:30pm
-\+ All School Holidays
++ All School Holidays
 ❄️ Closed January
 
 ---
@@ -364,13 +381,22 @@ Sun: 11am – 5:30pm
 **🛒 Order Cookies Online**
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
     """)
-    st.divider()
-    # api_key = st.text_input("OpenAI API Key", type="password",
-                           #  value=os.getenv("OPENAI_API_KEY", ""),
-                           #  help="Get your key at platform.openai.com")
-    
     api_key = os.getenv("OPENAI_API_KEY", "")
-    # st.divider()
+    
+    
+    st.divider()
+    #st.markdown("### 📄 Upload Menu or Document")
+    #uploaded_file = st.file_uploader(Ï
+     #   "Upload a PDF", 
+     #   type="pdf",
+     #   help="Upload updated menu, event details or any document!"
+    # )
+    #if uploaded_file:
+     #   if uploaded_file.name != st.session_state.pdf_name:
+       #     st.session_state.pdf_text = extract_pdf_text(uploaded_file)
+        #    st.session_state.pdf_name = uploaded_file.name
+       # st.success(f"✅ {uploaded_file.name} loaded!")
+     # st.divider()
     if st.button("🔄 Clear conversation"):
         st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         st.session_state.display_messages = []
@@ -390,15 +416,44 @@ for msg in st.session_state.display_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
+# PDF upload in main chat area
+uploaded_file = st.file_uploader(
+    "📎 Upload a document (optional)",
+    type="pdf",
+    help="Upload any PDF to ask questions about it!",
+    label_visibility="collapsed"
+)
+
+if uploaded_file:
+    if uploaded_file.name != st.session_state.get("pdf_name", ""):
+        st.session_state.pdf_text = extract_pdf_text(uploaded_file)
+        st.session_state.pdf_name = uploaded_file.name
+        st.success(f"✅ {uploaded_file.name} ready — ask me anything about it! 📄")
 if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
     if not api_key:
-        st.error("Please enter your OpenAI API key in the sidebar.")
-        st.stop()
+     st.error("Configuration error — please contact support.")
+    st.stop()
+
+  # Rebuild system prompt with latest PDF content every message
+    current_prompt = SYSTEM_PROMPT
+    if st.session_state.get("pdf_text"):
+        current_prompt = SYSTEM_PROMPT + f"""
+
+═══════════════════════════════
+📄 UPLOADED DOCUMENT
+═══════════════════════════════
+Document name: {st.session_state.pdf_name}
+Content: {st.session_state.pdf_text[:2000]}
+Answer questions about this document when asked."""
 
     with st.chat_message("user"):
         st.markdown(prompt)
     st.session_state.display_messages.append({"role": "user", "content": prompt})
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # Build messages with updated system prompt
+    messages_to_send = [{"role": "system", "content": current_prompt}]
+    for msg in st.session_state.display_messages:
+        messages_to_send.append({"role": msg["role"], "content": msg["content"]})
 
     with st.chat_message("assistant"):
         with st.spinner("Rolly is rolling... 🍦😎"):
@@ -406,7 +461,7 @@ if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
                 client = OpenAI(api_key=api_key)
                 response = client.chat.completions.create(
                     model="gpt-3.5-turbo",
-                    messages=st.session_state.messages,
+                   messages=messages_to_send,
                     temperature=0.8,
                     max_tokens=500,
                 )
