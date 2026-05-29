@@ -398,8 +398,9 @@ Sun: 11am – 5:30pm
        # st.success(f"✅ {uploaded_file.name} loaded!")
      # st.divider()
     if st.button("🔄 Clear conversation"):
-        st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         st.session_state.display_messages = []
+        st.session_state.pdf_text = ""
+        st.session_state.pdf_name = ""
         st.rerun()
     st.markdown("*Built with Python + OpenAI + Streamlit*")
 
