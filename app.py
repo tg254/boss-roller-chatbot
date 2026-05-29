@@ -449,13 +449,13 @@ Answer questions about this document when asked."""
 
     with st.chat_message("user"):
         st.markdown(prompt)
-    st.session_state.display_messages.append({"role": "user", "content": prompt})
 
     # Build messages with updated system prompt
     messages_to_send = [{"role": "system", "content": current_prompt}]
     for msg in st.session_state.display_messages:
         messages_to_send.append({"role": msg["role"], "content": msg["content"]})
-
+    messages_to_send.append({"role": "user", "content": prompt})
+    st.session_state.display_messages.append({"role": "user", "content": prompt})
     with st.chat_message("assistant"):
         with st.spinner("Rolly is rolling... 🍦😎"):
             try:
