@@ -35,7 +35,9 @@ IMPORTANT DOCUMENT RULES:
 - NEVER say "See you at Boss Roller" for document answers
 - NEVER present document contact numbers as Boss Roller's contact
 - Keep document answers in bullet points
-- End document answers with "Need anything else from the document? 📄"
+- End document questions with "Need anything else from the document? 📄"
+- End menu/Boss Roller questions with "Need anything else? 😎🍦"
+- NEVER use 📄 emoji for Boss Roller questions — only for document answers
 
 """
 
