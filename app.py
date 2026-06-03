@@ -344,7 +344,7 @@ with st.sidebar:
     label_visibility="collapsed",
     key=f"pdf_uploader_{len(st.session_state.display_messages)}"
 )
-    )
+    #)
     if uploaded_file:
         if uploaded_file.name != st.session_state.get("pdf_name", ""):
             st.session_state.pdf_text = extract_pdf_text(uploaded_file)
