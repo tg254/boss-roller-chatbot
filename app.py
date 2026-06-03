@@ -333,6 +333,7 @@ st.divider()
 with st.sidebar:
     st.markdown("### 😎 Boss Roller")
     st.markdown("""
+    
 **⭐ Top Sellers**
 - 🍪 Oreo Ever — £6.00
 - 🍫 Nutella Bueno — £7.00
@@ -373,16 +374,17 @@ Sun: 11am – 5:30pm
 **🛒 Order Cookies Online**
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
 
-  """)
-  st.divider()
-  api_key = os.getenv("OPENAI_API_KEY", "")
-  if st.button("🔄 Clear conversation"):
+  
+ """)
+    st.divider()
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
         st.session_state.pdf_text = ""
         st.session_state.pdf_name = ""
         st.session_state.show_uploader = False
         st.rerun()
-   st.markdown("*Built with Python + OpenAI + Streamlit*")
+    st.markdown("*Built with Python + OpenAI + Streamlit*")
 
 # Welcome message
 if not st.session_state.display_messages:
