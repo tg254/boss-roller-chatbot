@@ -327,7 +327,7 @@ if "show_uploader" not in st.session_state:
 # Page header
 st.markdown("## 🍦 Boss Roller 😎")
 st.markdown("*Aberdeen & Dundee's #1 Rolled Ice Cream · TikTok Famous* 🎥")
-st.divider()
+# st.divider()
 
 # Sidebar
 with st.sidebar:
@@ -348,6 +348,15 @@ with st.sidebar:
     if st.session_state.get("pdf_name"):
         st.caption(f"📄 {st.session_state.pdf_name} ✅")
     st.divider()
+    st.divider()
+api_key = os.getenv("OPENAI_API_KEY", "")
+if st.button("🔄 Clear conversation"):
+        st.session_state.display_messages = []
+        st.session_state.pdf_text = ""
+        st.session_state.pdf_name = ""
+        st.session_state.show_uploader = False
+        st.rerun()
+st.markdown("*Built with Python + OpenAI + Streamlit*")
     st.markdown("""
     
 **⭐ Top Sellers**
