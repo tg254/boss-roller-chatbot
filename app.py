@@ -321,6 +321,8 @@ if "pdf_name" not in st.session_state:
     st.session_state.pdf_name = ""
 if "display_messages" not in st.session_state:
     st.session_state.display_messages = []
+if "show_uploader" not in st.session_state:
+    st.session_state.show_uploader = False
 
 # Page header
 st.markdown("## 🍦 Boss Roller 😎")
