@@ -332,6 +332,22 @@ st.divider()
 # Sidebar
 with st.sidebar:
     st.markdown("### 😎 Boss Roller")
+    st.divider()
+    st.markdown("### 📎 Upload a Document")
+    st.caption("Upload any PDF to ask questions about it")
+    uploaded_file = st.file_uploader(
+        "Upload PDF",
+        type="pdf",
+        label_visibility="collapsed"
+    )
+    if uploaded_file:
+        if uploaded_file.name != st.session_state.get("pdf_name", ""):
+            st.session_state.pdf_text = extract_pdf_text(uploaded_file)
+            st.session_state.pdf_name = uploaded_file.name
+            st.success(f"✅ {uploaded_file.name} ready!")
+    if st.session_state.get("pdf_name"):
+        st.caption(f"📄 {st.session_state.pdf_name} ✅")
+    st.divider()
     st.markdown("""
     
 **⭐ Top Sellers**
@@ -376,22 +392,7 @@ Sun: 11am – 5:30pm
 
   
  """)
-    st.divider()
-    st.markdown("### 📎 Upload a Document")
-    st.caption("Upload any PDF to ask questions about it")
-    uploaded_file = st.file_uploader(
-        "Upload PDF",
-        type="pdf",
-        label_visibility="collapsed"
-    )
-    if uploaded_file:
-        if uploaded_file.name != st.session_state.get("pdf_name", ""):
-            st.session_state.pdf_text = extract_pdf_text(uploaded_file)
-            st.session_state.pdf_name = uploaded_file.name
-            st.success(f"✅ {uploaded_file.name} ready!")
-    if st.session_state.get("pdf_name"):
-        st.caption(f"📄 {st.session_state.pdf_name} ✅")
-    st.divider()
+  st.divider()
     api_key = os.getenv("OPENAI_API_KEY", "")
     if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
