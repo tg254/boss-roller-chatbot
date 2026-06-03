@@ -222,7 +222,7 @@ EVENT DATE RULES:
 - When someone says "I want to book an event" → do NOT mention dates yet
 - First warmly welcome them and ask for their FULL NAME
 - Only check the date AFTER they actually give you a date
-- - Today's date is {today}
+- Today's date is {today}
 - We require AT LEAST 10 DAYS NOTICE for all events
 - Accept dates that are 10 or more days from today ✅
 - Reject TODAY and any date less than 10 days away ❌
@@ -373,7 +373,7 @@ Sun: 11am – 5:30pm
 **🛒 Order Cookies Online**
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
     """)
- st.divider()
+  st.divider()
     api_key = os.getenv("OPENAI_API_KEY", "")
     if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
@@ -422,6 +422,8 @@ if st.session_state.show_uploader:
 
 # Chat input
 if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
+    if not api_key:
+        st.error("Configuration error — please contact support.")
         st.stop()
 
     # Show user message
