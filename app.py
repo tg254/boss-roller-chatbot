@@ -392,15 +392,15 @@ Sun: 11am – 5:30pm
 
   
  """)
-  st.divider()
-  api_key = os.getenv("OPENAI_API_KEY", "")
-  if st.button("🔄 Clear conversation"):
+st.divider()
+api_key = os.getenv("OPENAI_API_KEY", "")
+if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
         st.session_state.pdf_text = ""
         st.session_state.pdf_name = ""
         st.session_state.show_uploader = False
         st.rerun()
-   st.markdown("*Built with Python + OpenAI + Streamlit*")
+st.markdown("*Built with Python + OpenAI + Streamlit*")
 
 # Welcome message
 if not st.session_state.display_messages:
