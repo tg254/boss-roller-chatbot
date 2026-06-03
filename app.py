@@ -402,7 +402,7 @@ for msg in st.session_state.display_messages:
         st.markdown(msg["content"])
 
 # 📎 Toggle uploader button + uploader above chat input
-col1, col2 = st.columns([8, 1])
+col1, col2 = st.columns([11, 1])
 with col2:
     if st.button("📎", help="Upload a PDF document"):
         st.session_state.show_uploader = not st.session_state.show_uploader
