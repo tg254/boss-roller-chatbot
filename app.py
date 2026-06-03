@@ -249,6 +249,7 @@ If date is past → say date has passed ❌
   7. Total guests
   8. Number of kids
   9. Special requirements
+
 ═══════════════════════════════
 🤖 RECOMMENDATIONS
 ═══════════════════════════════
@@ -274,7 +275,6 @@ If date is past → say date has passed ❌
   like "No problem! 😊 I'm here if you need anything else!"
 - NEVER repeat information after user says no
 - Keep ALL answers max 3 bullet points — never more
-
 
 DOCUMENT ANSWER FORMAT — always like this:
 "Here's what I found! 📄
@@ -307,6 +307,7 @@ IF YOU DON'T KNOW say:
 NEVER make up information. NEVER invent prices.
 ALWAYS be fun, bold and enthusiastic! 😎🍦{pdf_section}"""
 
+
 def extract_pdf_text(pdf_file):
     reader = pypdf.PdfReader(pdf_file)
     text = ""
@@ -314,7 +315,8 @@ def extract_pdf_text(pdf_file):
         text += page.extract_text()
     return text
 
-# Session state initialization
+
+# ── Session state ──────────────────────────────────────────────────────────────
 if "pdf_text" not in st.session_state:
     st.session_state.pdf_text = ""
 if "pdf_name" not in st.session_state:
@@ -324,15 +326,13 @@ if "display_messages" not in st.session_state:
 if "show_uploader" not in st.session_state:
     st.session_state.show_uploader = False
 
-# Page header
+# ── Page header ────────────────────────────────────────────────────────────────
 st.markdown("## 🍦 Boss Roller 😎")
 st.markdown("*Aberdeen & Dundee's #1 Rolled Ice Cream · TikTok Famous* 🎥")
-# st.divider()
+st.divider()
 
-# Sidebar
+# ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 😎 Boss Roller")
-    st.divider()
     st.markdown("### 📎 Upload a Document")
     st.caption("Upload any PDF to ask questions about it")
     uploaded_file = st.file_uploader(
@@ -344,21 +344,11 @@ with st.sidebar:
         if uploaded_file.name != st.session_state.get("pdf_name", ""):
             st.session_state.pdf_text = extract_pdf_text(uploaded_file)
             st.session_state.pdf_name = uploaded_file.name
-            st.success(f"✅ {uploaded_file.name} ready!")
     if st.session_state.get("pdf_name"):
         st.caption(f"📄 {st.session_state.pdf_name} ✅")
     st.divider()
-    st.divider()
-    api_key = os.getenv("OPENAI_API_KEY", "")
-    if st.button("🔄 Clear conversation"):
-        st.session_state.display_messages = []
-        st.session_state.pdf_text = ""
-        st.session_state.pdf_name = ""
-        st.session_state.show_uploader = False
-        st.rerun()
-    st.markdown("*Built with Python + OpenAI + Streamlit*")
-
-    
+    st.markdown("### 😎 Boss Roller")
+    st.markdown("""
 **⭐ Top Sellers**
 - 🍪 Oreo Ever — £6.00
 - 🍫 Nutella Bueno — £7.00
@@ -398,20 +388,18 @@ Sun: 11am – 5:30pm
 
 **🛒 Order Cookies Online**
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
-
-  
- """)
-st.divider()
-api_key = os.getenv("OPENAI_API_KEY", "")
-if st.button("🔄 Clear conversation"):
+    """)
+    st.divider()
+    api_key = os.getenv("OPENAI_API_KEY", "")
+    if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
         st.session_state.pdf_text = ""
         st.session_state.pdf_name = ""
         st.session_state.show_uploader = False
         st.rerun()
-st.markdown("*Built with Python + OpenAI + Streamlit*")
+    st.markdown("*Built with Python + OpenAI + Streamlit*")
 
-# Welcome message
+# ── Welcome message ────────────────────────────────────────────────────────────
 if not st.session_state.display_messages:
     with st.chat_message("assistant"):
         st.markdown("""Hey hey hey! 👋🍦 I'm **Rollo** 😎, your Boss Roller assistant!
@@ -421,33 +409,49 @@ We're Aberdeen's most exciting rolled ice cream — TikTok famous! 🎥🔥
 Ask me about our menu, deals, locations, events, or let me help you find your perfect flavour!
 What can I get rolling for you today? 😎🍦""")
 
-# Display chat history
+# ── Chat history ───────────────────────────────────────────────────────────────
 for msg in st.session_state.display_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# 📎 Toggle uploader button + uploader above chat input
+# ── 📎 Toggle uploader above chat input ───────────────────────────────────────
+col1, col2 = st.columns([8, 1])
+with col2:
+    if st.button("📎", help="Upload a PDF document"):
+        st.session_state.show_uploader = not st.session_state.show_uploader
+        st.rerun()
 
-# Chat input
+if st.session_state.show_uploader:
+    uploaded_file = st.file_uploader(
+        "Upload a PDF to ask questions about it",
+        type="pdf",
+        label_visibility="visible"
+    )
+    if uploaded_file:
+        if uploaded_file.name != st.session_state.get("pdf_name", ""):
+            st.session_state.pdf_text = extract_pdf_text(uploaded_file)
+            st.session_state.pdf_name = uploaded_file.name
+            st.session_state.show_uploader = False
+            st.rerun()
+    if st.session_state.get("pdf_name"):
+        st.caption(f"📄 Loaded: {st.session_state.pdf_name} — ✅ Ready!")
+
+# ── Chat input ─────────────────────────────────────────────────────────────────
 if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
     if not api_key:
         st.error("Configuration error — please contact support.")
         st.stop()
 
-    # Show user message
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Build messages to send — history + new message
     messages_to_send = [{"role": "system", "content": get_system_prompt()}]
     for msg in st.session_state.display_messages:
         messages_to_send.append({"role": msg["role"], "content": msg["content"]})
     messages_to_send.append({"role": "user", "content": prompt})
 
-    # Save user message to display history
     st.session_state.display_messages.append({"role": "user", "content": prompt})
 
-    # Get AI response
     with st.chat_message("assistant"):
         with st.spinner("Rolly is rolling... 🍦😎"):
             try:
