@@ -357,7 +357,7 @@ with st.sidebar:
         st.session_state.show_uploader = False
         st.rerun()
     st.markdown("*Built with Python + OpenAI + Streamlit*")
-st.markdown """)
+
     
 **⭐ Top Sellers**
 - 🍪 Oreo Ever — £6.00
