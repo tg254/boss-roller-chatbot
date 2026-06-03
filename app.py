@@ -377,6 +377,21 @@ Sun: 11am – 5:30pm
   
  """)
     st.divider()
+    st.markdown("### 📎 Upload a Document")
+    st.caption("Upload any PDF to ask questions about it")
+    uploaded_file = st.file_uploader(
+        "Upload PDF",
+        type="pdf",
+        label_visibility="collapsed"
+    )
+    if uploaded_file:
+        if uploaded_file.name != st.session_state.get("pdf_name", ""):
+            st.session_state.pdf_text = extract_pdf_text(uploaded_file)
+            st.session_state.pdf_name = uploaded_file.name
+            st.success(f"✅ {uploaded_file.name} ready!")
+    if st.session_state.get("pdf_name"):
+        st.caption(f"📄 {st.session_state.pdf_name} ✅")
+    st.divider()
     api_key = os.getenv("OPENAI_API_KEY", "")
     if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
@@ -402,26 +417,6 @@ for msg in st.session_state.display_messages:
         st.markdown(msg["content"])
 
 # 📎 Toggle uploader button + uploader above chat input
-col1, col2 = st.columns([13, 1])
-with col2:
-    if st.button("📎", help="Upload a PDF document"):
-        st.session_state.show_uploader = not st.session_state.show_uploader
-        st.rerun()
-
-if st.session_state.show_uploader:
-    uploaded_file = st.file_uploader(
-        "Upload a PDF to ask questions about it",
-        type="pdf",
-        label_visibility="visible"
-    )
-    if uploaded_file:
-        if uploaded_file.name != st.session_state.get("pdf_name", ""):
-            st.session_state.pdf_text = extract_pdf_text(uploaded_file)
-            st.session_state.pdf_name = uploaded_file.name
-            st.session_state.show_uploader = False
-            st.rerun()
-    if st.session_state.get("pdf_name"):
-        st.caption(f"📄 Loaded: {st.session_state.pdf_name} — ✅ Ready!")
 
 # Chat input
 if prompt := st.chat_input("Ask about menu, deals, events, locations..."):
