@@ -339,9 +339,11 @@ with st.sidebar:
     st.markdown("### 📎 Upload a Document")
     st.caption("Upload any PDF to ask questions about it")
     uploaded_file = st.file_uploader(
-        "Upload PDF",
-        type="pdf",
-        label_visibility="collapsed"
+    "Upload PDF",
+    type="pdf",
+    label_visibility="collapsed",
+    key=f"pdf_uploader_{len(st.session_state.display_messages)}"
+)
     )
     if uploaded_file:
         if uploaded_file.name != st.session_state.get("pdf_name", ""):
