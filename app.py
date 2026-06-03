@@ -374,7 +374,7 @@ Sun: 11am – 5:30pm
 [Buy on Etsy](https://www.etsy.com/uk/listing/1739336791/nyc-stuffed-cookies-gift-box-handmade-in)
     """)
   st.divider()
-    api_key = os.getenv("OPENAI_API_KEY", "")
+  api_key = os.getenv("OPENAI_API_KEY", "")
     if st.button("🔄 Clear conversation"):
         st.session_state.display_messages = []
         st.session_state.pdf_text = ""
